@@ -17,7 +17,7 @@ if (UNIX AND NOT APPLE)
    link_libraries(rt)
 endif()
 
-add_library(ether SHARED src/ether.cc src/serialize.cc src/array.cc src/dict.cc)
+add_library(ether SHARED src/ether.cc src/serialize.cc src/array.cc src/dict.cc src/sparse.cc)
 target_link_libraries(ether arrow)
 
 install(TARGETS ether

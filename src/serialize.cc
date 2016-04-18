@@ -4,6 +4,9 @@
 #include <arrow/ipc/memory.h>
 #include <arrow/ipc/adapter.h>
 
+#define NO_IMPORT_ARRAY
+#define PY_ARRAY_UNIQUE_SYMBOL ETHER_ARRAY_API
+
 #include "api.h"
 
 #include <iostream>
@@ -67,14 +70,15 @@ PyObjectWriter::PyObjectWriter(PyObject* python_object, arrow::MemoryPool* pool)
 int64_t PyObjectWriter::assemble_payload_and_return_size() {
   int64_t result = 0;
   if (PyDict_Check(python_object_)) {
-    std::cout << "serialize dict" << std::endl;
     auto header = make_header(DICT_TYPE, 0, pool_);
     data_payload_ = serialize_dict(python_object_, pool_);
     arrow::ipc::GetRowBatchSize(data_payload_.get(), &data_payload_size_);
     result += data_payload_size_;
     arrow::ipc::GetRowBatchSize(header.get(), &metadata_size_);
     result += metadata_size_;
-  } else if (PyArray_Check(python_object_)) {
+  }
+  /*
+  if (PyArray_Check(python_object_)) {
     auto header = make_header(ARRAY_TYPE, 0, pool_);
     auto array_header = make_array_header((PyArrayObject*)python_object_, 0, pool_);
     data_payload_ = serialize_array((PyArrayObject*) python_object_, pool_);
@@ -85,71 +89,77 @@ int64_t PyObjectWriter::assemble_payload_and_return_size() {
     arrow::ipc::GetRowBatchSize(header.get(), &metadata_size_);
     result += metadata_size_;
   }
+  */
+  else if (is_csr_matrix(python_object_)) {
+    auto header = make_header(CSR_MATRIX, 0, pool_);
+    auto csr_header = make_csr_matrix_header(python_object_, 0, pool_);
+    data_payload_ = serialize_csr(python_object_, pool_);
+    arrow::ipc::GetRowBatchSize(data_payload_.get(), &data_payload_size_);
+    result += data_payload_size_;
+    arrow::ipc::GetRowBatchSize(csr_header.get(), &data_header_size_);
+    result += data_header_size_;
+    arrow::ipc::GetRowBatchSize(header.get(), &metadata_size_);
+    result += metadata_size_;
+  }
   return result;
 }
 
 int64_t PyObjectWriter::write_object_and_return_metadata_offset(arrow::ipc::MemorySource* target) {
   int64_t data_offset;
   arrow::ipc::WriteRowBatch(target, data_payload_.get(), 0, &data_offset);
-  std::cout << "testing reading: " << data_offset << std::endl;
-  std::cout << "address: " << target << std::endl;
-  std::shared_ptr<arrow::ipc::RowBatchReader> reader;
-  arrow::Status s = arrow::ipc::RowBatchReader::Open(target, 8, &reader);
-  auto data_header = dict_schema();
-  std::shared_ptr<arrow::RowBatch> data;
-  s = reader->GetRowBatch(data_header, &data);
-  assert(s.ok());
-  s = arrow::ipc::RowBatchReader::Open(target, 8, &reader);
-  assert(s.ok());
-  std::cout << "data offset is" << data_offset << std::endl;
+  int64_t metadata_offset;
   if (PyDict_Check(python_object_)) {
-    // auto header = make_header(DICT_TYPE, data_offset, pool_);
-    int64_t metadata_offset = 42;
-    // arrow::ipc::WriteRowBatch(target, header.get(), data_payload_size_, &metadata_offset);
-    return metadata_offset;
+    auto header = make_header(DICT_TYPE, data_offset, pool_);
+    arrow::ipc::WriteRowBatch(target, header.get(), data_payload_size_, &metadata_offset);
   } else if (PyArray_Check(python_object_)) {
     int64_t array_header_offset;
     auto array_header = make_array_header((PyArrayObject*) python_object_, data_offset, pool_);
     arrow::ipc::WriteRowBatch(target, array_header.get(), data_payload_size_, &array_header_offset);
     auto header = make_header(ARRAY_TYPE, array_header_offset, pool_);
-    int64_t metadata_offset;
     arrow::ipc::WriteRowBatch(target, header.get(), data_payload_size_ + data_header_size_, &metadata_offset);
-    return metadata_offset;
+  } else if (is_csr_matrix(python_object_)) {
+    int64_t csr_header_offset;
+    auto csr_header = make_csr_matrix_header(python_object_, data_offset, pool_);
+    arrow::ipc::WriteRowBatch(target, csr_header.get(), data_payload_size_, &csr_header_offset);
+    auto header = make_header(CSR_MATRIX, csr_header_offset, pool_);
+    arrow::ipc::WriteRowBatch(target, header.get(), data_payload_size_ + data_header_size_, &metadata_offset);
   }
+  return metadata_offset;
 }
 
 PyObject* read_arrow_object(arrow::ipc::MemorySource* source, int64_t metadata_offset) {
-  std::cout << "metadata_offset " << metadata_offset << std::endl;
-  std::cout << "address: " << source << std::endl;
   std::shared_ptr<arrow::ipc::RowBatchReader> reader;
-  // // arrow::Status s = arrow::ipc::RowBatchReader::Open(source, metadata_offset, &reader);
-  // assert(s.ok());
-  // if (!s.ok()) {
-  //    ORCH_LOG(ORCH_FATAL, s.ToString());
-  // }
-  // // auto header_schema = make_header_schema();
-  // // std::shared_ptr<arrow::RowBatch> header;
-  // // reader->GetRowBatch(header_schema, &header);
-  // // const int64_t* header_data = dynamic_cast<arrow::Int64Array*>(header->column(0).get())->raw_data();
-  // // int64_t type = header_data[0];
-  int64_t type = 1;
-  std::cout << "type is " << type << std::endl;
-  // // std::cout << "offset is " << header_data[1] << std::endl;
-  std::shared_ptr<arrow::RowBatch> data;
-  std::shared_ptr<arrow::ipc::RowBatchReader> reader2;
-  // s = arrow::ipc::RowBatchReader::Open(source, header_data[1], &reader2);
-  arrow::Status s = arrow::ipc::RowBatchReader::Open(source, 8, &reader2);
-  std::cout << s.ToString() << std::endl;
+  arrow::Status s = arrow::ipc::RowBatchReader::Open(source, metadata_offset, &reader);
   assert(s.ok());
-  // if (!s.ok()) {
-  //   ORCH_LOG(ORCH_FATAL, s.ToString());
-  // }
+  auto header_schema = make_header_schema();
+  std::shared_ptr<arrow::RowBatch> header;
+  s = reader->GetRowBatch(header_schema, &header);
+  assert(s.ok());
+  const int64_t* header_data = dynamic_cast<arrow::Int64Array*>(header->column(0).get())->raw_data();
+  int64_t type = header_data[0];
+  std::shared_ptr<arrow::RowBatch> data;
+  s = arrow::ipc::RowBatchReader::Open(source, header_data[1], &reader);
+  assert(s.ok());
   switch (type) {
     case DICT_TYPE: {
       auto data_header = dict_schema();
-      s = reader2->GetRowBatch(data_header, &data);
+      s = reader->GetRowBatch(data_header, &data);
       assert(s.ok());
       return deserialize_dict(data);
+    }
+    case CSR_MATRIX: {
+      auto data_header = csr_sparse_header_schema();
+      s = reader->GetRowBatch(data_header, &data);
+      assert(s.ok());
+      const int64_t* data_header_content = dynamic_cast<arrow::Int64Array*>(data->column(0).get())->raw_data();
+      int64_t data_offset = data_header_content[2];
+      s = arrow::ipc::RowBatchReader::Open(source, data_offset, &reader);
+      assert(s.ok());
+      auto content_header = csr_sparse_schema();
+      std::shared_ptr<arrow::RowBatch> content; // TODO: the distinction between content and data here is horrible
+      s = reader->GetRowBatch(content_header, &content);
+      assert(s.ok());
+      return deserialize_csr(content, data_header_content[0], data_header_content[1]);
     }
     break;
   }

@@ -7,12 +7,6 @@ std::shared_ptr<arrow::Schema> dict_schema() {
   return std::shared_ptr<arrow::Schema>(new arrow::Schema({key_field, offset_field, val_field}));
 }
 
-template <typename T>
-std::shared_ptr<arrow::Buffer> to_buffer(const std::vector<T>& values) {
-  return std::make_shared<arrow::Buffer>(
-      reinterpret_cast<const uint8_t*>(values.data()), values.size() * sizeof(T));
-}
-
 const int64_t INITIAL_KEYS_CAPACITY = 512;
 
 std::shared_ptr<arrow::RowBatch> serialize_dict(PyObject* dict, arrow::MemoryPool* pool) {
