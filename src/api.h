@@ -16,6 +16,16 @@ enum EtherType {
 	CSR_MATRIX = 2
 };
 
+/*
+class Tensor {
+  Tensor(std::initializer_list<int64_t> dims);
+  std::shared_ptr<arrow::Schema> header_schema(); // eventually this will be schema() and header as well as data will be collapsed into a struct
+  std::shared_ptr<arrow::RowBatch> header_content();
+  std::shared_ptr<arrow::Schema> data_schema();
+  std::shared_ptr<arrow::RowBatch> data_content();
+}
+*/
+
 std::shared_ptr<arrow::StringBuilder> make_string_builder(arrow::MemoryPool* pool);
 std::shared_ptr<arrow::Int64Builder> make_int64_builder(arrow::MemoryPool* pool);
 
@@ -23,8 +33,11 @@ std::shared_ptr<arrow::Schema> dict_schema();
 std::shared_ptr<arrow::RowBatch> serialize_dict(PyObject* dict, arrow::MemoryPool* pool);
 PyObject* deserialize_dict(std::shared_ptr<arrow::RowBatch> rows);
 
+std::shared_ptr<arrow::Schema> array_header_schema();
+std::shared_ptr<arrow::Schema> array_schema();
 std::shared_ptr<arrow::RowBatch> make_array_header(PyArrayObject* array, int64_t data_offset, arrow::MemoryPool* pool);
 std::shared_ptr<arrow::RowBatch> serialize_array(PyArrayObject* array, arrow::MemoryPool* pool);
+PyObject* deserialize_array(std::shared_ptr<arrow::RowBatch> array);
 
 std::shared_ptr<arrow::Schema> csr_sparse_header_schema();
 std::shared_ptr<arrow::Schema> csr_sparse_schema();
@@ -34,7 +47,6 @@ std::shared_ptr<arrow::RowBatch> serialize_csr(PyObject* matrix, arrow::MemoryPo
 PyObject* deserialize_csr(std::shared_ptr<arrow::RowBatch> matrix, int64_t num_rows, int64_t num_cols);
 
 std::shared_ptr<arrow::Schema> make_header_schema();
-
 std::shared_ptr<arrow::RowBatch> make_header(EtherType type, int64_t metadata_offset, arrow::MemoryPool* pool);
 
 // ArrowObject serialize_object(PyObject* python_object);

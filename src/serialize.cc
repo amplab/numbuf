@@ -138,7 +138,8 @@ PyObject* read_arrow_object(arrow::ipc::MemorySource* source, int64_t metadata_o
   const int64_t* header_data = dynamic_cast<arrow::Int64Array*>(header->column(0).get())->raw_data();
   int64_t type = header_data[0];
   std::shared_ptr<arrow::RowBatch> data;
-  s = arrow::ipc::RowBatchReader::Open(source, header_data[1], &reader);
+  std::shared_ptr<arrow::ipc::RowBatchReader> reader2;
+  s = arrow::ipc::RowBatchReader::Open(source, header_data[1], &reader2);
   assert(s.ok());
   switch (type) {
     case DICT_TYPE: {
@@ -147,19 +148,20 @@ PyObject* read_arrow_object(arrow::ipc::MemorySource* source, int64_t metadata_o
       assert(s.ok());
       return deserialize_dict(data);
     }
+    break;
     case CSR_MATRIX: {
       auto data_header = csr_sparse_header_schema();
-      s = reader->GetRowBatch(data_header, &data);
+      s = reader2->GetRowBatch(data_header, &data);
       assert(s.ok());
-      const int64_t* data_header_content = dynamic_cast<arrow::Int64Array*>(data->column(0).get())->raw_data();
-      int64_t data_offset = data_header_content[2];
+      auto header_data = std::dynamic_pointer_cast<arrow::Int64Array>(data->column(0));
+      int64_t data_offset = header_data->Value(2);
       s = arrow::ipc::RowBatchReader::Open(source, data_offset, &reader);
       assert(s.ok());
       auto content_header = csr_sparse_schema();
       std::shared_ptr<arrow::RowBatch> content; // TODO: the distinction between content and data here is horrible
       s = reader->GetRowBatch(content_header, &content);
       assert(s.ok());
-      return deserialize_csr(content, data_header_content[0], data_header_content[1]);
+      return deserialize_csr(content, header_data->Value(0), header_data->Value(1));
     }
     break;
   }

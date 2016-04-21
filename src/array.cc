@@ -1,4 +1,13 @@
 #include "api.h"
+// #include "array.h"
+
+std::shared_ptr<arrow::Schema> array_header_schema() {
+
+}
+
+std::shared_ptr<arrow::Schema> array_schema() {
+
+}
 
 std::shared_ptr<arrow::RowBatch> make_array_header(PyArrayObject* array, int64_t data_offset, arrow::MemoryPool* pool) {
 	/*

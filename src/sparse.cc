@@ -13,11 +13,11 @@ std::shared_ptr<arrow::Schema> csr_sparse_header_schema() {
 
 std::shared_ptr<arrow::RowBatch> make_csr_matrix_header(PyObject* matrix, int64_t data_offset, arrow::MemoryPool* pool) {
   PyObject* shape = PyObject_GetAttr(matrix, PyString_FromString("shape")); // TODO: this might leak memory of the string
-  std::vector<int64_t> header_data({PyInt_AsLong(PyTuple_GetItem(shape, 0)), PyInt_AsLong(PyTuple_GetItem(shape, 1)), data_offset});
-  std::shared_ptr<arrow::Buffer> header_buffer = to_buffer(header_data);
-  auto header_array = std::make_shared<arrow::Int64Array>(header_data.size(), header_buffer);
+  std::vector<int64_t>* header_data = new std::vector<int64_t>({PyInt_AsLong(PyTuple_GetItem(shape, 0)), PyInt_AsLong(PyTuple_GetItem(shape, 1)), data_offset}); // TODO: deallocate
+  std::shared_ptr<arrow::Buffer> header_buffer = to_buffer(*header_data);
+  auto header_array = std::make_shared<arrow::Int64Array>(header_data->size(), header_buffer);
 	auto schema = csr_sparse_header_schema();
-  return std::shared_ptr<arrow::RowBatch>(new arrow::RowBatch(schema, (int)header_data.size(), {header_array}));
+  return std::shared_ptr<arrow::RowBatch>(new arrow::RowBatch(schema, (int)header_data->size(), {header_array}));
 }
 
 std::shared_ptr<arrow::Schema> csr_sparse_schema() {
