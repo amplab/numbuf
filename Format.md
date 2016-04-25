@@ -15,6 +15,11 @@ Design decisions:
 		can be made fast in the most common case of homogeneous arrays containing
 		primitive objects, it might be the way to go
 
+  * If constructing a type like Tensor from a Python type, it is the user's
+    responsibility that the data does not get deallocated; if types are
+    constructed from e. g. a row batch, we hold onto the smart pointer to make
+    sure the memory stays alive.
+
 Encoding Dense Arrays
 ---------------------
 

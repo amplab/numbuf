@@ -1,6 +1,6 @@
-# Aether: Powering In-Memory Scientific Data Analysis
+# NumBuf: Numerical Buffers
 
-Aether is an in-memory representation for scientific data (including Computer
+NumBuf is an in-memory representation for scientific data (including Computer
 Vision, Graphics, Machine Learning, Optimization, Graph Analytics) based on
 Apache Arrow with the following goals:
 
