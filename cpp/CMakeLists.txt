@@ -24,11 +24,10 @@ install(FILES
   src/numbuf/tensor.h
   src/numbuf/types.h
   src/numbuf/metadata.h
-  src/numbuf/util/logging.h
-  src/numbuf/util/utils.h
   DESTINATION include/numbuf/)
 
 install(FILES
+  src/numbuf/util/buffer.h
   src/numbuf/util/logging.h
   src/numbuf/util/utils.h
   DESTINATION include/numbuf/util/)

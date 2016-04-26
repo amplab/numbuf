@@ -5,6 +5,7 @@
 #include <numpy/arrayobject.h>
 
 #include "adapters/numpy.h"
+#include "adapters/python.h"
 
 PythonObjectWriter::PythonObjectWriter(arrow::MemoryPool* pool) : pool_(pool) {}
 
@@ -15,7 +16,9 @@ arrow::Status PythonObjectWriter::AssemblePayload(PyObject* value) {
     type_ = numbuf::DataType::TENSOR;
     info_ = PyArray_TYPE(array);
   } else if(PyDict_Check(value)) {
-    assert(false);
+    PyDictToArrow(value, &data_payload_);
+    type_ = numbuf::DataType::DICT;
+    info_ = 0;
   }
   return arrow::Status::OK();
 }
@@ -54,6 +57,11 @@ arrow::Status ReadPythonObjectFrom(arrow::ipc::MemoryMappedSource* source, int64
     auto schema = numbuf::Tensor::schema(dtype);
     ARROW_RETURN_NOT_OK(reader->GetRowBatch(schema, &data));
     ArrowToNumPy(data, out);
+  } else if (type == numbuf::DataType::DICT) {
+    std::shared_ptr<arrow::RowBatch> data;
+    auto schema = numbuf::Dict::schema();
+    ARROW_RETURN_NOT_OK(reader->GetRowBatch(schema, &data));
+    ArrowToPyDict(data, out);
   }
   return arrow::Status::OK();
 }

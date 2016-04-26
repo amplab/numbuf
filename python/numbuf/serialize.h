@@ -8,6 +8,7 @@
 #include <numbuf/metadata.h>
 #include <numbuf/types.h>
 #include <numbuf/tensor.h>
+#include <numbuf/dict.h>
 
 class PythonObjectWriter {
 public:
