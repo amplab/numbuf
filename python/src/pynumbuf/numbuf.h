@@ -1,6 +1,8 @@
 #ifndef PYNUMBUF_H
 #define PYNUMBUF_H
 
+namespace pynumbuf {
+
 class MemoryMapFixture {
  public:
   void TearDown() {
@@ -19,5 +21,7 @@ class MemoryMapFixture {
  private:
   std::vector<std::string> tmp_files_;
 };
+
+}
 
 #endif

@@ -1,5 +1,7 @@
 #include "python.h"
 
+namespace pynumbuf {
+
 arrow::Status ArrowToPyDict(std::shared_ptr<arrow::RowBatch> batch, PyObject** out) {
   PyObject* dict = PyDict_New();
   size_t size = batch->num_rows();
@@ -33,4 +35,6 @@ arrow::Status PyDictToArrow(PyObject* dict, std::shared_ptr<arrow::RowBatch> *ou
   }
   *out = result.content();
   return arrow::Status::OK();
+}
+
 }

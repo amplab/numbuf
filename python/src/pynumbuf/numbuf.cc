@@ -14,7 +14,7 @@ extern "C" {
 
 struct shared_data {
   std::shared_ptr<arrow::ipc::MemoryMappedSource> mmap;
-  MemoryMapFixture fixture;
+  pynumbuf::MemoryMapFixture fixture;
   int64_t metadata_offset;
 };
 
@@ -35,7 +35,7 @@ PyObject* serialize_object(PyObject* self, PyObject* args) {
   }
   shared_data* data = new shared_data();
 
-  PythonObjectWriter writer(arrow::default_memory_pool());
+  pynumbuf::PythonObjectWriter writer(arrow::default_memory_pool());
   writer.AssemblePayload(value);
   int64_t size;
   writer.GetTotalSize(&size);
@@ -55,7 +55,7 @@ PyObject* deserialize_object(PyObject* self, PyObject* args) {
   }
 
   PyObject* result;
-	ReadPythonObjectFrom(data->mmap.get(), data->metadata_offset, &result);
+	pynumbuf::ReadPythonObjectFrom(data->mmap.get(), data->metadata_offset, &result);
   return result;
 }
 

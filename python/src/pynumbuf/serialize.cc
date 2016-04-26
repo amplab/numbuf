@@ -7,6 +7,8 @@
 #include "adapters/numpy.h"
 #include "adapters/python.h"
 
+namespace pynumbuf {
+
 PythonObjectWriter::PythonObjectWriter(arrow::MemoryPool* pool) : pool_(pool) {}
 
 arrow::Status PythonObjectWriter::AssemblePayload(PyObject* value) {
@@ -41,7 +43,7 @@ arrow::Status PythonObjectWriter::Write(arrow::ipc::MemorySource* target, int64_
   return arrow::Status::OK();
 }
 
-arrow::Status ReadPythonObjectFrom(arrow::ipc::MemoryMappedSource* source, int64_t metadata_offset, PyObject** out) {
+arrow::Status ReadPythonObjectFrom(arrow::ipc::MemorySource* source, int64_t metadata_offset, PyObject** out) {
   std::shared_ptr<arrow::ipc::RowBatchReader> reader;
   ARROW_RETURN_NOT_OK(arrow::ipc::RowBatchReader::Open(source, metadata_offset, &reader));
   auto header_schema = numbuf::MakeHeaderSchema();
@@ -64,4 +66,6 @@ arrow::Status ReadPythonObjectFrom(arrow::ipc::MemoryMappedSource* source, int64
     ArrowToPyDict(data, out);
   }
   return arrow::Status::OK();
+}
+
 }

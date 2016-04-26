@@ -10,9 +10,11 @@
 #include <numbuf/tensor.h>
 #include <numbuf/dict.h>
 
+namespace pynumbuf {
+
 class PythonObjectWriter {
 public:
-  PythonObjectWriter(arrow::MemoryPool* pool);
+  PythonObjectWriter(arrow::MemoryPool* pool=nullptr);
   arrow::Status AssemblePayload(PyObject* value);
   arrow::Status GetTotalSize(int64_t* size);
   arrow::Status Write(arrow::ipc::MemorySource* target, int64_t* metadata_offset);
@@ -24,6 +26,8 @@ private:
   int64_t data_size_;
 };
 
-arrow::Status ReadPythonObjectFrom(arrow::ipc::MemoryMappedSource* target, int64_t metadata_offset, PyObject** out);
+arrow::Status ReadPythonObjectFrom(arrow::ipc::MemorySource* target, int64_t metadata_offset, PyObject** out);
+
+}
 
 #endif

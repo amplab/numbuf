@@ -4,6 +4,8 @@
 #include <numbuf/tensor.h>
 #include <numbuf/types.h>
 
+namespace pynumbuf {
+
 #define NUMPY_TYPE_TO_ARROW_CASE(TYPE)    \
   case NPY_##TYPE:                         \
     return numbuf::TYPE##_TYPE;
@@ -67,4 +69,6 @@ arrow::Status NumPyToArrow(PyArrayObject* array, std::shared_ptr<arrow::RowBatch
   *out = tensor.content();
 
   return arrow::Status::OK();
+}
+
 }
