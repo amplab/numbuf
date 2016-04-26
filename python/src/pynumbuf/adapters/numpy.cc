@@ -63,6 +63,7 @@ arrow::Status NumPyToArrow(PyArrayObject* array, std::shared_ptr<arrow::RowBatch
     dims[i] = PyArray_DIM(array, i);
   }
   auto type = numpy_type_to_arrow(dtype);
+  array = PyArray_GETCONTIGUOUS(array); // TODO(pcm): support noncontiguous arrays without copying
   auto buffer = std::make_shared<arrow::Buffer>(reinterpret_cast<uint8_t*>(PyArray_DATA(array)), PyArray_SIZE(array) * type->value_size());
   numbuf::Tensor tensor(dims.begin(), dims.end(), type, buffer);
 
