@@ -2,6 +2,7 @@
 #define PYNUMBUF_NUMPY_H
 
 #include <arrow/api.h>
+#include <Python.h>
 
 #define NO_IMPORT_ARRAY
 #define PY_ARRAY_UNIQUE_SYMBOL NUMBUF_ARRAY_API
