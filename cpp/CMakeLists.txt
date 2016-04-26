@@ -8,7 +8,7 @@ if (UNIX AND NOT APPLE)
    link_libraries(rt)
 endif()
 
-add_library(numbuf SHARED src/numbuf/tensor.cc src/numbuf/types.cc src/numbuf/metadata.cc)
+add_library(numbuf SHARED src/numbuf/tensor.cc src/numbuf/types.cc src/numbuf/metadata.cc src/numbuf/dict.cc)
 target_link_libraries(numbuf arrow)
 
 add_executable(test src/numbuf/test.cc)
