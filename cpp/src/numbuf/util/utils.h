@@ -26,7 +26,7 @@ public:
   template<typename It>
   arrow::Status add_elem(It begin, It end) {
     uint8_t* data;
-    ARROW_RETURN_NOT_OK(value_buffer_->Grow(std::distance(begin, end) * sizeof(std::iterator_traits<It>::value_type), &data));
+    ARROW_RETURN_NOT_OK(value_buffer_->Grow(std::distance(begin, end) * sizeof(typename std::iterator_traits<It>::value_type), &data));
     std::copy(begin, end, reinterpret_cast<typename std::iterator_traits<It>::pointer>(data));
     int32_t* offset;
     ARROW_RETURN_NOT_OK(offset_buffer_->Grow(sizeof(int32_t), reinterpret_cast<uint8_t**>(&offset)));

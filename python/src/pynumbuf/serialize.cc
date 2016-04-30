@@ -6,6 +6,7 @@
 
 #include "adapters/numpy.h"
 #include "adapters/python.h"
+#include "adapters/numbuf.h"
 
 namespace pynumbuf {
 
@@ -18,9 +19,23 @@ arrow::Status PythonObjectWriter::AssemblePayload(PyObject* value) {
     type_ = numbuf::DataType::TENSOR;
     info_ = PyArray_TYPE(array);
   } else if(PyDict_Check(value)) {
-    PyDictToArrow(value, &data_payload_);
-    type_ = numbuf::DataType::DICT;
-    info_ = 0;
+    PyObject *key, *val;
+    Py_ssize_t pos = 0;
+    bool all_children_are_arrays = true;
+    while (PyDict_Next(value, &pos, &key, &val)) {
+      if(!PyArray_Check(val)) {
+        all_children_are_arrays = false;
+      }
+    }
+    if (all_children_are_arrays) {
+      NumBufToArrow(value, &data_payload_);
+      type_ = numbuf::DataType::NUMBUF;
+      info_ = 0;
+    } else {
+      PyDictToArrow(value, &data_payload_);
+      type_ = numbuf::DataType::DICT;
+      info_ = 0;
+    }
   }
   return arrow::Status::OK();
 }

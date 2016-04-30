@@ -9,7 +9,7 @@ struct DataType {
   enum type {
     TENSOR = 0,
     DICT = 1,
-    TENSOR_COLLECTION = 2
+    NUMBUF = 2
   };
 };
 

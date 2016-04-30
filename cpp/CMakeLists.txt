@@ -8,7 +8,7 @@ if (UNIX AND NOT APPLE)
    link_libraries(rt)
 endif()
 
-add_library(numbuf SHARED src/numbuf/tensor.cc src/numbuf/types.cc src/numbuf/metadata.cc src/numbuf/dict.cc)
+add_library(numbuf SHARED src/numbuf/tensor.cc src/numbuf/numbuf.cc src/numbuf/types.cc src/numbuf/metadata.cc src/numbuf/dict.cc)
 target_link_libraries(numbuf arrow)
 
 add_executable(test src/numbuf/test.cc)
@@ -22,6 +22,7 @@ install(TARGETS numbuf
 install(FILES
   src/numbuf/dict.h
   src/numbuf/tensor.h
+  src/numbuf/numbuf.h
   src/numbuf/types.h
   src/numbuf/metadata.h
   DESTINATION include/numbuf/)
