@@ -3,6 +3,8 @@
 
 #include <arrow/util/buffer.h>
 
+#include <iostream>
+
 namespace numbuf {
 
 static constexpr int64_t MIN_BUFFER_CAPACITY = 1024;

@@ -17,6 +17,8 @@ arrow::Status NumPyToArrow(PyArrayObject* array, std::shared_ptr<arrow::RowBatch
 
 arrow::TypePtr numpy_type_to_arrow(int numpy_type);
 
+int arrow_type_to_numpy(arrow::TypePtr type);
+
 }
 
 #endif

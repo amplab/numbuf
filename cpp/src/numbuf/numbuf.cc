@@ -21,7 +21,7 @@ std::shared_ptr<arrow::RowBatch> Numbuf::content() {
   copy_to_buffer(dtypes_, &dtype_buffer);
   auto dtype_array = std::make_shared<arrow::Int64Array>(size_, dtype_buffer);
   auto dim_offsets = dims_.offsets();
-  auto dim_values = keys_.values<arrow::Int64Array>();
+  auto dim_values = dims_.values<arrow::Int64Array>();
   auto dims = std::make_shared<arrow::ListArray>(std::make_shared<arrow::ListType>(INT64_TYPE), size_, dim_offsets->data(), dim_values);
 
   std::shared_ptr<arrow::PoolBuffer> offsets_buffer;

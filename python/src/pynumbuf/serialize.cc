@@ -79,6 +79,11 @@ arrow::Status ReadPythonObjectFrom(arrow::ipc::MemorySource* source, int64_t met
     auto schema = numbuf::Dict::schema();
     ARROW_RETURN_NOT_OK(reader->GetRowBatch(schema, &data));
     ArrowToPyDict(data, out);
+  } else if (type == numbuf::DataType::NUMBUF) {
+    std::shared_ptr<arrow::RowBatch> data;
+    auto schema = numbuf::Numbuf::schema();
+    ARROW_RETURN_NOT_OK(reader->GetRowBatch(schema, &data));
+    ArrowToNumBuf(data, out);
   }
   return arrow::Status::OK();
 }
