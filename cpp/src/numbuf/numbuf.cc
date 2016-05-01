@@ -27,7 +27,7 @@ std::shared_ptr<arrow::RowBatch> Numbuf::content() {
   std::shared_ptr<arrow::PoolBuffer> offsets_buffer;
   copy_to_buffer(offsets_, &offsets_buffer);
 
-  auto content_values = std::make_shared<arrow::PrimitiveArray>(UINT8_TYPE, num_bytes_, buffer_);
+  auto content_values = std::make_shared<arrow::PrimitiveArray>(UINT8_TYPE, num_bytes_, data_.Finish());
   auto content = std::make_shared<arrow::ListArray>(std::make_shared<arrow::ListType>(UINT8_TYPE), size_, offsets_buffer, content_values);
 
   std::vector<std::shared_ptr<arrow::Array>> arrays = {key_array, key_offset_array, dtype_array, dims, content};

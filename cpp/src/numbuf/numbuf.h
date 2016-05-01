@@ -12,7 +12,7 @@ namespace numbuf {
 
 class Numbuf {
 public:
-  Numbuf() : num_bytes_(0), size_(0), buffer_(new ElasticBuffer()) {
+  Numbuf() : num_bytes_(0), size_(0), data_(nullptr) {
     offsets_.push_back(0);
     dims_.push_initial_offset();
   }
@@ -21,14 +21,12 @@ public:
     keys_.add_elem(key, key_len);
     dtypes_.push_back(dtype->type);
     dims_.add_elem(begin_dims, end_dims);
-    uint8_t* buffer;
-    ARROW_RETURN_NOT_OK(buffer_->Grow(data->size(), &buffer));
     if(offsets_.size() == 0) {
       offsets_.push_back(data->size());
     } else {
       offsets_.push_back(offsets_[offsets_.size()-1] + data->size());
     }
-    std::copy(data->data(), data->data() + data->size(), buffer);
+    data_.Append(data->data(), data->size());
     num_bytes_ += data->size();
     size_ += 1;
     return arrow::Status::OK();
@@ -42,7 +40,7 @@ private:
   std::vector<int64_t> dtypes_;
   ArrayBuilder dims_;
   std::vector<int32_t> offsets_;
-  std::shared_ptr<ElasticBuffer> buffer_;
+  arrow::BufferBuilder data_;
   std::shared_ptr<arrow::Schema> schema_;
   std::shared_ptr<arrow::RowBatch> content_;
 };
