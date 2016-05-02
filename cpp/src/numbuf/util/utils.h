@@ -9,60 +9,52 @@ namespace numbuf {
 
 class ArrayBuilder {
 public:
-  ArrayBuilder() : size_(0), offset_size_(0), cursor_(0), value_buffer_(new ElasticBuffer()), offset_buffer_(new ElasticBuffer()) {}
+  ArrayBuilder() : size_(0), offset_size_(0), value_cursor_(0), value_data_(nullptr), offset_data_(nullptr) {}
 
   arrow::Status push_initial_offset() {
-    uint8_t* data;
-    ARROW_RETURN_NOT_OK(offset_buffer_->Grow(1 * sizeof(int32_t), &data));
-    int32_t* offset = reinterpret_cast<int32_t*>(data);
-    *offset = 0;
+    int32_t zero = 0;
+    offset_data_.Append(zero);
     offset_size_ = 1;
     return arrow::Status::OK();
   }
 
   template<typename T>
-  arrow::Status add_elem(const T* values, size_t key_len) {
-    uint8_t* data;
-    ARROW_RETURN_NOT_OK(value_buffer_->Grow(key_len * sizeof(T), &data));
-    memcpy(data, values, key_len * sizeof(T));
-    int32_t* offset;
-    ARROW_RETURN_NOT_OK(offset_buffer_->Grow(sizeof(int32_t), reinterpret_cast<uint8_t**>(&offset)));
-    cursor_ += key_len;
-    *offset = cursor_;
+  arrow::Status add_elem(const T* values, size_t len) {
+    value_data_.Append(values, len);
     size_ += 1;
     offset_size_ += 1;
+    value_cursor_ += len;
+    offset_data_.Append(value_cursor_);
     return arrow::Status::OK();
   }
 
   template<typename It>
   arrow::Status add_elem(It begin, It end) {
-    uint8_t* data;
-    ARROW_RETURN_NOT_OK(value_buffer_->Grow(std::distance(begin, end) * sizeof(typename std::iterator_traits<It>::value_type), &data));
-    std::copy(begin, end, reinterpret_cast<typename std::iterator_traits<It>::pointer>(data));
-    int32_t* offset;
-    ARROW_RETURN_NOT_OK(offset_buffer_->Grow(sizeof(int32_t), reinterpret_cast<uint8_t**>(&offset)));
-    cursor_ += std::distance(begin, end);
-    *offset = cursor_;
+    for (auto it = begin; it != end; ++it) {
+      value_data_.Append(*it);
+    }
     size_ += 1;
     offset_size_ += 1;
+    value_cursor_ += std::distance(begin, end);
+    offset_data_.Append(value_cursor_);
     return arrow::Status::OK();
   }
 
   template<typename PrimitiveArray>
   std::shared_ptr<PrimitiveArray> values() {
-    return std::make_shared<PrimitiveArray>(size_, value_buffer_);
+    return std::make_shared<PrimitiveArray>(size_, value_data_.Finish());
   }
 
   std::shared_ptr<arrow::Int32Array> offsets() {
-    return std::make_shared<arrow::Int32Array>(offset_size_, offset_buffer_);
+    return std::make_shared<arrow::Int32Array>(offset_size_, offset_data_.Finish());
   }
 
 private:
   int64_t size_;
+  int32_t value_cursor_;
   int64_t offset_size_;
-  int64_t cursor_;
-  std::shared_ptr<ElasticBuffer> value_buffer_;
-  std::shared_ptr<ElasticBuffer> offset_buffer_;
+  arrow::BufferBuilder value_data_;
+  arrow::BufferBuilder offset_data_;
 };
 
 template <typename It, typename T>

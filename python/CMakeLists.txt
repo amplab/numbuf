@@ -24,3 +24,5 @@ install(FILES
   src/pynumbuf/serialize.h
   src/pynumbuf/numbuf.h
   DESTINATION include/pynumbuf/)
+
+install(TARGETS pynumbuf DESTINATION ${CMAKE_SOURCE_DIR}/pynumbuf/)
