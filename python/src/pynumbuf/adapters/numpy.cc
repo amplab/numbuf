@@ -23,6 +23,7 @@ arrow::TypePtr numpy_type_to_arrow(int numpy_type) {
     NUMPY_TYPE_TO_ARROW_CASE(FLOAT)
     NUMPY_TYPE_TO_ARROW_CASE(DOUBLE)
     default:
+      std::cout << "type " << numpy_type << "unknown" << std::endl;
       assert(false);
   }
 }
