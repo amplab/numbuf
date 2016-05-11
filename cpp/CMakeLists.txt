@@ -9,8 +9,9 @@ if (UNIX AND NOT APPLE)
 endif()
 
 set(ARROW_INCLUDE_DIR "" CACHE FILEPATH "Path to arrow includes")
-
 include_directories(SYSTEM ${ARROW_INCLUDE_DIR})
+set(ARROW_LIBRARY_DIR "" CACHE FILEPATH "Path to arrow library")
+set_target_properties(arrow PROPERTIES IMPORTED_LOCATION "${ARROW_LIBRARY_DIR}")
 
 add_library(numbuf SHARED src/numbuf/tensor.cc src/numbuf/types.cc src/numbuf/metadata.cc src/numbuf/dict.cc)
 target_link_libraries(numbuf arrow)
