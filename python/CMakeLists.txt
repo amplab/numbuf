@@ -19,6 +19,12 @@ set(ARROW_LIBRARY_DIR "" CACHE FILEPATH "Path to arrow library")
 add_library(arrow SHARED IMPORTED)
 set_target_properties(arrow PROPERTIES IMPORTED_LOCATION "${ARROW_LIBRARY_DIR}")
 
+set(NUMBUF_INCLUDE_DIR "" CACHE FILEPATH "Path to numbuf includes")
+include_directories(SYSTEM ${NUMBUF_INCLUDE_DIR})
+set(NUMBUF_LIBRARY_DIR "" CACHE FILEPATH "Path to arrow library")
+add_library(numbuf SHARED IMPORTED)
+set_target_properties(numbuf PROPERTIES IMPORTED_LOCATION "${NUMBUF_LIBRARY_DIR}")
+
 add_library(pynumbuf SHARED src/pynumbuf/serialize.cc src/pynumbuf/numbuf.cc src/pynumbuf/adapters/numpy.cc src/pynumbuf/adapters/python.cc)
 target_link_libraries(pynumbuf arrow numbuf)
 
