@@ -10,10 +10,6 @@ endif()
 
 set(ARROW_INCLUDE_DIR "" CACHE FILEPATH "Path to arrow includes")
 
-if(NOT ARROW_INCLUDE_DIR/arrow/api.h)
-  message(SEND_ERROR "Can't find arrow/api.h in ${ARROW_INCLUDE_DIR}")
-endif()
-
 include_directories(SYSTEM ${ARROW_INCLUDE_DIR})
 
 add_library(numbuf SHARED src/numbuf/tensor.cc src/numbuf/types.cc src/numbuf/metadata.cc src/numbuf/dict.cc)
