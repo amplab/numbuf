@@ -14,7 +14,7 @@ include_directories("${NUMPY_INCLUDE_DIR}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 add_library(pynumbuf SHARED src/pynumbuf/serialize.cc src/pynumbuf/numbuf.cc src/pynumbuf/adapters/numpy.cc src/pynumbuf/adapters/python.cc)
-target_link_libraries(pynumbuf arrow numbuf)
+target_link_libraries(pynumbuf arrow numbuf ${PYTHON_LIBRARIES})
 
 install(TARGETS pynumbuf
   LIBRARY DESTINATION lib
