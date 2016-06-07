@@ -53,7 +53,7 @@ arrow::Status ArrowToNumPy(std::shared_ptr<arrow::RowBatch> batch, PyObject** ou
   uint8_t* data = const_cast<uint8_t*>(tensor.data()); // TODO(pcm): make numpy array immutable
   std::vector<npy_intp> dims(tensor.num_dims()); // introducing temporary variable to fix compilation on MAC OS X
   for (int i = 0; i < tensor.num_dims(); ++i) {
-    dims.push_back(tensor.dims()[i]);
+    dims[i] = tensor.dims()[i];
   }
   *out = PyArray_SimpleNewFromData(tensor.num_dims(), dims.data(), arrow_type_to_numpy(tensor.dtype()), reinterpret_cast<void*>(data));
   return arrow::Status::OK();
