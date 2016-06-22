@@ -1,5 +1,4 @@
 #include "numpy.h"
-#include "../numbuf.h"
 
 #include <numbuf/tensor.h>
 #include <numbuf/types.h>
