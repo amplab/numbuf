@@ -29,7 +29,12 @@ arrow::TypePtr arrow_type(int64_t dtype) {
       return FLOAT_TYPE;
     case arrow::Type::DOUBLE:
       return DOUBLE_TYPE;
+    default:
+      NUMBUF_LOG(FATAL) << "unknown type";
+      return BOOL_TYPE;
   }
+  NUMBUF_LOG(FATAL) << "this cannot happen";
+  return BOOL_TYPE;
 }
 
 }
