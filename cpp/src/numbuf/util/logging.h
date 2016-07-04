@@ -45,38 +45,8 @@ namespace numbuf {
 #ifdef NDEBUG
 #define NUMBUF_DFATAL NUMBUF_WARNING
 
-#define DCHECK(condition) \
-  while (false)           \
-  numbuf::internal::NullLog()
-#define DCHECK_EQ(val1, val2) \
-  while (false)               \
-  numbuf::internal::NullLog()
-#define DCHECK_NE(val1, val2) \
-  while (false)               \
-  numbuf::internal::NullLog()
-#define DCHECK_LE(val1, val2) \
-  while (false)               \
-  numbuf::internal::NullLog()
-#define DCHECK_LT(val1, val2) \
-  while (false)               \
-  numbuf::internal::NullLog()
-#define DCHECK_GE(val1, val2) \
-  while (false)               \
-  numbuf::internal::NullLog()
-#define DCHECK_GT(val1, val2) \
-  while (false)               \
-  numbuf::internal::NullLog()
-
 #else
 #define NUMBUF_DFATAL NUMBUF_FATAL
-
-#define DCHECK(condition) NUMBUF_CHECK(condition)
-#define DCHECK_EQ(val1, val2) NUMBUF_CHECK((val1) == (val2))
-#define DCHECK_NE(val1, val2) NUMBUF_CHECK((val1) != (val2))
-#define DCHECK_LE(val1, val2) NUMBUF_CHECK((val1) <= (val2))
-#define DCHECK_LT(val1, val2) NUMBUF_CHECK((val1) < (val2))
-#define DCHECK_GE(val1, val2) NUMBUF_CHECK((val1) >= (val2))
-#define DCHECK_GT(val1, val2) NUMBUF_CHECK((val1) > (val2))
 
 #endif  // NDEBUG
 
