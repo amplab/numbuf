@@ -33,7 +33,7 @@ Tensor Tensor::from_arrow(std::shared_ptr<arrow::RowBatch> batch) {
 
 void Tensor::initialize_content(const arrow::TypePtr& dtype, int64_t size, std::shared_ptr<arrow::Buffer> data) {
   std::shared_ptr<arrow::PoolBuffer> dtype_buffer;
-  copy_to_buffer({dtype->type}, &dtype_buffer);
+  copy_to_buffer({static_cast<int64_t>(dtype->type)}, &dtype_buffer);
   std::shared_ptr<arrow::PoolBuffer> dim_offsets;
   copy_to_buffer({0, static_cast<int32_t>(dims_.size())}, &dim_offsets);
   std::shared_ptr<arrow::PoolBuffer> dim_buffer;
