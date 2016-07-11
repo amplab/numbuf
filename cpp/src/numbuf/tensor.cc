@@ -42,7 +42,8 @@ void Tensor::initialize_content(const arrow::TypePtr& dtype, int64_t size, std::
   auto dims = std::make_shared<arrow::ListArray>(std::make_shared<arrow::ListType>(INT64_TYPE), 1, dim_offsets, dim_values);
   std::shared_ptr<arrow::PoolBuffer> content_offsets;
   copy_to_buffer({0, static_cast<int32_t>(size)}, &content_offsets);
-  auto content_values = std::make_shared<arrow::PrimitiveArray>(dtype, size, data);
+  std::shared_ptr<arrow::Array> content_values;
+  arrow::MakePrimitiveArray(dtype, size, data, 0, nullptr, &content_values);
   auto content = std::make_shared<arrow::ListArray>(std::make_shared<arrow::ListType>(dtype), 1, content_offsets, content_values);
   auto dtype_array = std::make_shared<arrow::Int64Array>(1, dtype_buffer);
   std::vector<std::shared_ptr<arrow::Array>> arrays = {dtype_array, dims, content};
