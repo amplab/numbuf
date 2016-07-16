@@ -25,10 +25,10 @@ arrow::Status Dict::add_entry(const char* key, size_t key_len, int64_t value) {
 std::shared_ptr<arrow::RowBatch> Dict::content() {
   auto key_array = keys_.values<arrow::Int8Array>();
   auto offset_array = keys_.offsets();
-  auto val_array = std::make_shared<arrow::Int64Array>(size_, val_buffer_);
+  auto val_array = std::make_shared<arrow::Int64Array>(static_cast<int32_t>(size_), val_buffer_);
   auto schema = Dict::schema();
   std::vector<std::shared_ptr<arrow::Array> > arrays = {key_array, offset_array, val_array};
-  return std::make_shared<arrow::RowBatch>(schema, size_, arrays);
+  return std::make_shared<arrow::RowBatch>(schema, static_cast<int>(size_), arrays);
 }
 
 }
