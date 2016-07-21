@@ -38,7 +38,7 @@ void Tensor::initialize_content(const arrow::TypePtr& dtype, int64_t size, std::
   copy_to_buffer({0, static_cast<int32_t>(dims_.size())}, &dim_offsets);
   std::shared_ptr<arrow::PoolBuffer> dim_buffer;
   copy_to_buffer<int64_t>(dims_, &dim_buffer);
-  auto dim_values = std::make_shared<arrow::Int64Array>(dims_.size(), dim_buffer);
+  auto dim_values = std::make_shared<arrow::Int64Array>(static_cast<int32_t>(dims_.size()), dim_buffer);
   auto dims = std::make_shared<arrow::ListArray>(std::make_shared<arrow::ListType>(INT64_TYPE), 1, dim_offsets, dim_values);
   std::shared_ptr<arrow::PoolBuffer> content_offsets;
   copy_to_buffer({0, static_cast<int32_t>(size)}, &content_offsets);

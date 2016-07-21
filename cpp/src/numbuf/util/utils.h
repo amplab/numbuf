@@ -37,11 +37,11 @@ public:
 
   template<typename PrimitiveArray>
   std::shared_ptr<PrimitiveArray> values() {
-    return std::make_shared<PrimitiveArray>(size_, value_buffer_);
+    return std::make_shared<PrimitiveArray>(static_cast<int32_t>(size_), value_buffer_);
   }
 
   std::shared_ptr<arrow::Int32Array> offsets() {
-    return std::make_shared<arrow::Int32Array>(size_, offset_buffer_);
+    return std::make_shared<arrow::Int32Array>(static_cast<int32_t>(size_), offset_buffer_);
   }
 
 private:
