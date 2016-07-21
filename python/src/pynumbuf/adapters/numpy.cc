@@ -23,7 +23,7 @@ arrow::TypePtr numpy_type_to_arrow(int numpy_type) {
     NUMPY_TYPE_TO_ARROW_CASE(DOUBLE)
     default:
       assert(false);
-      return NULL;
+      return 0;  // To suppress warning that we're not returning anything
   }
 }
 
@@ -45,7 +45,7 @@ int arrow_type_to_numpy(arrow::TypePtr type) {
     ARROW_TYPE_TO_NUMPY_CASE(DOUBLE)
     default:
       assert(false);
-      return NULL;
+      return 0;  // To suppress warning that we're not returning anything
   }
 }
 
