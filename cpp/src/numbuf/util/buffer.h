@@ -3,7 +3,7 @@
 
 #include <arrow/util/buffer.h>
 
-namespace numbuf {
+namespace numbufold {
 
 static constexpr int64_t MIN_BUFFER_CAPACITY = 1024;
 

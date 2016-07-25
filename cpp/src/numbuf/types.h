@@ -5,7 +5,7 @@
 
 #include "util/logging.h"
 
-namespace numbuf {
+namespace numbufold {
 
 const auto BOOL_TYPE = std::make_shared<arrow::BooleanType>();
 

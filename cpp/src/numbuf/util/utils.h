@@ -5,7 +5,7 @@
 
 #include "buffer.h"
 
-namespace numbuf {
+namespace numbufold {
 
 class ArrayBuilder {
 public:

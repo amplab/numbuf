@@ -1,6 +1,6 @@
 #include "tensor.h"
 
-namespace numbuf {
+namespace numbufold {
 
 Tensor::Tensor(std::initializer_list<int64_t> dims, const arrow::TypePtr& dtype,
     std::shared_ptr<arrow::Buffer> data) : Tensor(dims.begin(), dims.end(), dtype, data) {}

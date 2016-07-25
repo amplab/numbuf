@@ -1,6 +1,6 @@
 #include "types.h"
 
-namespace numbuf {
+namespace numbufold {
 
 arrow::TypePtr arrow_type(int64_t dtype) {
   switch(dtype) {

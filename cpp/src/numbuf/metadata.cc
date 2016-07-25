@@ -1,7 +1,7 @@
 #include "metadata.h"
 #include "util/utils.h"
 
-namespace numbuf {
+namespace numbufold {
 
 std::shared_ptr<arrow::Schema> MakeHeaderSchema() {
   auto type_field = std::make_shared<arrow::Field>("type", std::make_shared<arrow::Int64Type>());

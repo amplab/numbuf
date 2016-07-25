@@ -3,7 +3,7 @@
 
 #include <arrow/api.h>
 
-namespace numbuf {
+namespace numbufold {
 
 struct DataType {
   enum type {

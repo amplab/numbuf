@@ -7,7 +7,7 @@
 #include "util/utils.h"
 #include "types.h"
 
-namespace numbuf {
+namespace numbufold {
 
 class Tensor {
 public:

@@ -2,7 +2,7 @@
 
 #include <cassert>
 
-namespace numbuf {
+namespace numbufold {
 
 // TODO(pcm): Implement more key and value types (at the moment, the keys must
 // be strings and the values must be int64)

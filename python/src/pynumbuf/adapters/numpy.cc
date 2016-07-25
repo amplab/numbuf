@@ -7,7 +7,7 @@ namespace pynumbuf {
 
 #define NUMPY_TYPE_TO_ARROW_CASE(TYPE)    \
   case NPY_##TYPE:                         \
-    return numbuf::TYPE##_TYPE;
+    return numbufold::TYPE##_TYPE;
 
 arrow::TypePtr numpy_type_to_arrow(int numpy_type) {
   switch (numpy_type) {
@@ -50,7 +50,7 @@ int arrow_type_to_numpy(arrow::TypePtr type) {
 }
 
 arrow::Status ArrowToNumPy(std::shared_ptr<arrow::RowBatch> batch, PyObject** out) {
-  numbuf::Tensor tensor = numbuf::Tensor::from_arrow(batch);
+  numbufold::Tensor tensor = numbufold::Tensor::from_arrow(batch);
   uint8_t* data = const_cast<uint8_t*>(tensor.data()); // TODO(pcm): make numpy array immutable
   std::vector<npy_intp> dims(tensor.num_dims()); // introducing temporary variable to fix compilation on MAC OS X
   for (int i = 0; i < tensor.num_dims(); ++i) {
@@ -70,7 +70,7 @@ arrow::Status NumPyToArrow(PyArrayObject* array, std::shared_ptr<arrow::RowBatch
   }
   auto type = numpy_type_to_arrow(dtype);
   auto buffer = std::make_shared<arrow::Buffer>(reinterpret_cast<uint8_t*>(PyArray_DATA(array)), PyArray_SIZE(array) * type->value_size());
-  numbuf::Tensor tensor(dims.begin(), dims.end(), type, buffer);
+  numbufold::Tensor tensor(dims.begin(), dims.end(), type, buffer);
 
   *out = tensor.content();
 

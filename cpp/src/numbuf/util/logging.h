@@ -21,7 +21,7 @@
 #include <cstdlib>
 #include <iostream>
 
-namespace numbuf {
+namespace numbufold {
 
 // Stubbed versions of macros defined in glog/logging.h, intended for
 // environments where glog headers aren't available.
@@ -35,11 +35,11 @@ namespace numbuf {
 #define NUMBUF_ERROR 2
 #define NUMBUF_FATAL 3
 
-#define NUMBUF_LOG_INTERNAL(level) numbuf::internal::CerrLog(level)
+#define NUMBUF_LOG_INTERNAL(level) numbufold::internal::CerrLog(level)
 #define NUMBUF_LOG(level) NUMBUF_LOG_INTERNAL(NUMBUF_##level)
 
 #define NUMBUF_CHECK(condition)                               \
-  (condition) ? 0 : ::numbuf::internal::FatalLog(NUMBUF_FATAL) \
+  (condition) ? 0 : ::numbufold::internal::FatalLog(NUMBUF_FATAL) \
                         << __FILE__ << __LINE__ << "Check failed: " #condition " "
 
 #ifdef NDEBUG

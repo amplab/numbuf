@@ -22,7 +22,7 @@ arrow::Status ArrowToPyDict(std::shared_ptr<arrow::RowBatch> batch, PyObject** o
 }
 
 arrow::Status PyDictToArrow(PyObject* dict, std::shared_ptr<arrow::RowBatch> *out) {
-  numbuf::Dict result;
+  numbufold::Dict result;
   PyObject *key, *value;
   Py_ssize_t pos = 0;
   while (PyDict_Next(dict, &pos, &key, &value)) {
